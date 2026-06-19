@@ -1,23 +1,39 @@
-import * as THREE from "three"
-import * as React from "react"
-import * as ReactDOM from "react-dom/client"
-import { Sidebar } from "./react-components/Sidebar"
+import * as THREE from "three" // 3D Library
+import * as React from "react" // React
+import * as ReactDOM from "react-dom/client" 
+import * as Router from "react-router-dom"  // The Router
+
 import { GUI } from "three/examples/jsm/libs/lil-gui.module.min.js"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js"
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js"
+
+import { Sidebar } from "./react-components/Sidebar"
 import { ProjectsPage } from "./react-components/ProjectsPage"
+import { ProjectDetailsPage } from "./react-components/ProjectDetailsPage"
+import { ProjectsManager } from './classes/ProjectsManager';
+
+
+
+// Create a ProejctsManager Instance
+const projectsManager = new ProjectsManager();
 
 const rootElement = document.getElementById("app") as HTMLDivElement
 const appRoot = ReactDOM.createRoot(rootElement)
 appRoot.render(
   <>
-    <Sidebar />
-    <ProjectsPage />
+	<Router.BrowserRouter> {/* The main Route: Everything must be INSIDE */}
+		<Sidebar />
+		<Router.Routes> {/* Inside ALL the "changing" components */}
+			{/* NOTE: To define DYNAMIC DATA in the URL path, use ":" + name of the PARAM we wnat to take from URL*/}
+			<Router.Route path="/" element={<ProjectsPage projectsManager={projectsManager} />}></Router.Route>
+			<Router.Route path="/project/:id" element={<ProjectDetailsPage projectsManager={projectsManager} />}></Router.Route>
+		</Router.Routes>
+	</Router.BrowserRouter>
   </>
 )
 
-//ThreeJS viewer
+/* //ThreeJS viewer
 const scene = new THREE.Scene()
 
 const viewerContainer = document.getElementById("viewer-container") as HTMLElement
@@ -86,4 +102,4 @@ mtlLoader.load("../assets/Gear/Gear1.mtl", (materials) => {
   objLoader.load("../assets/Gear/Gear1.obj", (mesh) => {
     scene.add(mesh)
   })
-})
+}) */

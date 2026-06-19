@@ -1,17 +1,21 @@
 import { IProject, Project } from "./Project"
 
 export class ProjectsManager {
-  list: Project[] = []
 
-  constructor() {
-    const project = this.newProject({
-      name: "Default Project",
-      description: "This is just a default app project",
-      status: "pending",
-      userRole: "architect",
-      finishDate: new Date()
-    })
-    project.ui.click()
+	list: Project[] = []
+	onCreatedProject = (project:Project) => {} // A callback FN when a PJ is Created
+	onDeletedProject = () => {} // A callback FN when a PJ is Deleted
+
+	constructor() {
+		const project = this.newProject({
+		name: "Default Project",
+		description: "This is just a default app project",
+		status: "pending",
+		userRole: "architect",
+		finishDate: new Date(),
+		progress: 10
+		})
+   
   }
 
   newProject(data: IProject) {
@@ -23,29 +27,12 @@ export class ProjectsManager {
       throw new Error(`A project with the name "${data.name}" already exists`)
     }
     const project = new Project(data)
-    project.ui.addEventListener("click", () => {
-      const projectsPage = document.getElementById("projects-page")
-      const detailsPage = document.getElementById("project-details")
-      if (!(projectsPage && detailsPage)) { return }
-      projectsPage.style.display = "none"
-      detailsPage.style.display = "flex"
-      this.setDetailsPage(project)
-    })
-    this.list.push(project)	
+    this.list.push(project)
+	this.onCreatedProject(project); // Execute the callback FN
     return project
   }
 
-  private setDetailsPage(project: Project) {
-    const detailsPage = document.getElementById("project-details")
-    if (!detailsPage) { return }
-    const name = detailsPage.querySelector("[data-project-info='name']")
-    if (name) { name.textContent = project.name }
-    const description = detailsPage.querySelector("[data-project-info='description']")
-    if (description) { description.textContent = project.description }
-    const cardName = detailsPage.querySelector("[data-project-info='cardName']")
-    if (cardName) { cardName.textContent = project.name }
-    const cardDescription = detailsPage.querySelector("[data-project-info='cardDescription']")
-  }
+
 
   getProject(id: string) {
     const project = this.list.find((project) => {
@@ -56,12 +43,12 @@ export class ProjectsManager {
   
   deleteProject(id: string) {
     const project = this.getProject(id)
-    if (!project) { return }
-    project.ui.remove()
+    if (!project) { return }   
     const remaining = this.list.filter((project) => {
       return project.id !== id
     })
     this.list = remaining
+	this.onDeletedProject()
   }
   
   exportToJSON(fileName: string = "projects") {
