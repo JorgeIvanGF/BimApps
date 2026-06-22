@@ -73,7 +73,9 @@ export class ProjectsManager {
       const projects: IProject[] = JSON.parse(json as string)
       for (const project of projects) {
         try {
-          this.newProject(project)
+			// to change from string to Date type:
+			project.finishDate = new Date(project.finishDate)
+          	this.newProject(project)
         } catch (error) {
           
         }
