@@ -5,7 +5,7 @@ import { IProject, Project, ProjectStatus, UserRole } from '../classes/Project';
 import { ProjectsManager } from '../classes/ProjectsManager';
 import { ProjectCard} from './ProjectCard';
 import { ProjectModal } from './ProjectModal'; // Importamos el nuevo modal
-
+import { SearchBox } from './ToDo/SearchBox';
 
 interface ProjectPageProps{
 	projectsManager: ProjectsManager;
@@ -83,6 +83,11 @@ export function ProjectsPage(props:ProjectPageProps) {
 		props.projectsManager.importFromJSON()
 	}
 
+	// When typing in the searchBox
+	const handleProjectSearch = (value:string) =>{
+		setProjects(props.projectsManager.filterProject(value));
+	}
+
   	return (
 		<div className="page" id="projects-page" style={{ display: "flex" }}>
 			{/* Form for New Project */}
@@ -90,6 +95,7 @@ export function ProjectsPage(props:ProjectPageProps) {
 			{/* Header */}
 			<header>
 				<h2>Projects</h2>
+				<SearchBox onChange={(value) => {handleProjectSearch(value)}}/>
 				<div style={{ display: "flex", alignItems: "center", columnGap: 15 }}>
 				<span id="import-projects-btn" className="material-icons-round action-icon" onClick={onImportProject}>file_upload</span>
 				<span id="export-projects-btn" className="material-icons-round action-icon" onClick={onExportProject}>file_download</span>

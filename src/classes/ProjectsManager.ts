@@ -18,6 +18,15 @@ export class ProjectsManager {
    
   }
 
+
+  filterProject(value:string){
+	// Filter in the list of PJs
+	const filteredProjects = this.list.filter((project)=>{
+		return project.name.includes(value)
+	})
+	return filteredProjects;
+  }
+
   newProject(data: IProject) {
     const projectNames = this.list.map((project) => {
       return project.name

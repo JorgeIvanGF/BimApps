@@ -4,7 +4,11 @@ import * as Router from "react-router-dom";
 import { ProjectsManager } from '../classes/ProjectsManager';
 import { ProjectInfo } from './ProjectInfo';
 import { ProjectModal } from './ProjectModal'; // Importamos el nuevo modal
+import { ToDoItem } from './ToDo/ToDoItem'; // Importamos el nuevo modal
 import { IProject, Project } from '../classes/Project';
+import { ToDoHeader } from './ToDo/ToDoHeader';
+import { SearchBox } from './ToDo/SearchBox';
+import { ToDoSection} from './ToDo/ToDoSection';
 
 
 
@@ -26,6 +30,11 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
 
 	// A State for render changes when changing Project
 	const [project, setProject] = React.useState(projectData)
+
+	// 🔄 EFECTO CLAVE: Si cambias de proyecto por la barra de navegación, actualizamos el estado actual
+    React.useEffect(() => {
+        setProject(projectData);
+    }, [projectData]);
 
 	// FN to Open the correct Modal
 	const handleOpenEditModal = () => {
@@ -50,6 +59,9 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
         setProject(new Project(project)); // TO DEBUG
     };
 
+	const pruebaOnChange = (value:string)=>{
+		console.log("Esto es el valor: ", value);
+	}
 	return(
 
 		<div className="page" id="project-details" >
@@ -66,31 +78,10 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
 					<ProjectInfo project={project} onEditClick={handleOpenEditModal}/>
 					{/* To-Do Main */}
 					<div className="dashboard-card" style={{ flexGrow: 1 }}>
-						{/* To-Do header */}
-						<div style={{padding: "20px 30px",display: "flex",alignItems: "center",justifyContent: "space-between"}}>
-							<h4>To-Do</h4>
-							<div style={{display: "flex",alignItems: "center",justifyContent: "end",columnGap: 20}}>
-								<div style={{ display: "flex", alignItems: "center", columnGap: 10 }}>
-									<span className="material-icons-round">search</span>
-									<input type="text" placeholder="Search To-Do's by name"	style={{ width: "100%" }}/>
-								</div>
-								<span className="material-icons-round">add</span>
-							</div>
+						<div>
+							<SearchBox onChange={(value)=>{pruebaOnChange(value)}}/>
 						</div>
-						{/* To-Do Item */}
-						<div style={{display: "flex",flexDirection: "column",padding: "10px 30px",rowGap: 20}}>
-							<div className="todo-item">
-								<div style={{display: "flex",justifyContent: "space-between",alignItems: "center"}}>
-									{/* Icon + Description */}
-									<div style={{ display: "flex", columnGap: 15, alignItems: "center" }}>
-										<span className="material-icons-round" style={{padding: 10,backgroundColor: "#686868",borderRadius: 10}}>construction</span>
-										<p>Make anything here as you want, even something longer.</p>
-									</div>
-									{/* Estimated Date */}
-									<p style={{ textWrap: "nowrap", marginLeft: 10 }}>Fri, 20 sep</p>
-								</div>
-							</div>
-						</div>
+						<ToDoSection/>
 					</div>
 				</div>
 				<div id="viewer-container"	className="dashboard-card"	style={{ minWidth: 0 }}>

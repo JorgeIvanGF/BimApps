@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
+import { IToDo } from '../react-components/ToDo/ToDoItem'
 
 export type ProjectStatus = "pending" | "active" | "finished"
 export type UserRole = "architect" | "engineer" | "developer"
@@ -10,6 +11,8 @@ export interface IProject {
 	userRole: UserRole
 	finishDate: Date
 	progress: number
+	id?:string
+	toDos?: IToDo[]
 }
 
 export class Project implements IProject {
@@ -20,10 +23,11 @@ export class Project implements IProject {
 	userRole: "architect" | "engineer" | "developer"
   	finishDate: Date
 	progress: number;
+	id: string
+	toDos?: IToDo[] | undefined;
   
   //Class internals  
 	cost: number = 0
-	id: string
 
   	constructor(data: IProject) {
 		// Asignación explícita: Súper segura, legible y adorada por TypeScript
@@ -33,7 +37,9 @@ export class Project implements IProject {
 		this.userRole = data.userRole
 		this.finishDate = data.finishDate 
 		this.progress = data.progress;
-		this.id = uuidv4()
+
+		if(data.toDos){this.toDos = data.toDos}
+		this.id = data.id ? data.id : uuidv4()
 	}
 
 	initials():string{
