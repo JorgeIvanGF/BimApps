@@ -19,8 +19,12 @@ interface ToDoItemProps {
 // 3. Main Function
 export function ToDoItem(props:ToDoItemProps){
 
+	// 🛡️ BLINDAJE: Forzamos la creación de un objeto Date real, por si acaso viene como string del JSON.
+    // Si viene vacío o inválido por algún motivo, usamos la fecha de hoy como red de seguridad.
+    const safeDate = props.todo.date ? new Date(props.todo.date) : new Date();
+
 	// Formateamos la fecha dinámicamente (ej: "Fri, 20 Sep")
-	const formattedDate = props.todo.date.toLocaleDateString('en-US', {
+	const formattedDate = safeDate.toLocaleDateString('en-US', {
 		weekday: 'short',
 		day: 'numeric',
 		month: 'short'

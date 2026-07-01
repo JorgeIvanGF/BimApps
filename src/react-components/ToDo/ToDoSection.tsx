@@ -3,9 +3,13 @@ import { ToDoHeader } from './ToDoHeader';
 import { ToDoItem, IToDo } from './ToDoItem';
 import { ToDoModal } from './ToDoModal';
 
-export function ToDoSection() {
-	// 1. Estados principales: La lista total de tareas y el texto de búsqueda
-	const [toDos, setToDos] = React.useState<IToDo[]>([]);
+interface ToDoSectionProps{
+	toDos:IToDo[];
+	onToDosChange: (newToDos: IToDo[])=>void;
+}
+
+export function ToDoSection(props: ToDoSectionProps) {
+	// 1. Estados principal el texto de búsqueda
 	const [searchQuery, setSearchQuery] = React.useState<string>("");
 
 	// 2. Operación: Abrir el modal nativo <dialog> buscando su ID en el DOM
@@ -16,11 +20,11 @@ export function ToDoSection() {
 		}
 	};
 
-	// 3. Operación: Recibir el nuevo ToDo desde el Modal y sumarlo a la lista
-	const handleAddToDo = (newToDo: IToDo) => {
-		// Usamos el operador spread (...) para clonar la lista actual y agregar el nuevo al final
-		setToDos([...toDos, newToDo]);
-	};
+	// 3. Recibe el nuevo To-Do desde el Modal, clona la lista que nos dio el padre y la actualiza
+    const handleAddToDo = (newToDo: IToDo) => {
+        const updatedList = [...props.toDos, newToDo];
+        props.onToDosChange(updatedList); // 💬 Le avisa al padre para que actualice la clase Project
+    };
 
 	// 4. Operación: Actualizar el estado del filtro cuando el usuario escribe en el SearchBox
 	const handleSearchChange = (text: string) => {
@@ -28,7 +32,7 @@ export function ToDoSection() {
 	};
 
 	// 5. Lógica de Filtrado Dinámico: Filtra en tiempo real sin destruir la lista original
-	const filteredToDos = toDos.filter((todo) => {
+	const filteredToDos = props.toDos.filter((todo) => {
 		return todo.description.toLowerCase().includes(searchQuery.toLowerCase());
 	});
 

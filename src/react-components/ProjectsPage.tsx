@@ -105,9 +105,12 @@ export function ProjectsPage(props:ProjectPageProps) {
 				</div>
 			</header>
 			{/* Projects List */}
-			<div id="projects-list">
-				{projectCards}
-			</div>
+			{
+				projects.length > 0 ?
+				<div id="projects-list">
+					{projectCards}
+				</div> : <p style={{padding:"50px"} }>No projects found...</p>
+			}
 		</div>
   	)
 }

@@ -9,7 +9,7 @@ import { IProject, Project } from '../classes/Project';
 import { ToDoHeader } from './ToDo/ToDoHeader';
 import { SearchBox } from './ToDo/SearchBox';
 import { ToDoSection} from './ToDo/ToDoSection';
-
+import { IToDo } from './ToDo/ToDoItem'; // Importamos la interfaz del To-Do
 
 
 interface ProjectDetailsPageProps{
@@ -54,14 +54,45 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
         project.finishDate = updatedData.finishDate;
 		project.progress = updatedData.progress;
 
+		const updatedProjectInstance = new Project(project);
+
+        // 🔄 Sincronizamos la lista global del manager con los nuevos datos generales
+        props.projectsManager.list = props.projectsManager.list.map((proj) => {
+            return proj.id === project.id ? updatedProjectInstance : proj;
+        });
+
         // ¡CLAVE! Seteamos el estado con una copia del proyecto modificado. 
         // Esto obliga a React a refrescar la pantalla inmediatamente con los textos nuevos.
-        setProject(new Project(project)); // TO DEBUG
+        setProject(updatedProjectInstance); // TO DEBUG
+    };
+
+	// ⚡ OPERACIÓN MAESTRA: Manejador para coordinar y sincronizar los To-Dos con el ProjectsManager
+    const handleToDosChange = (updatedToDos: IToDo[]) => {
+        // 1. Guardamos la nueva lista en la instancia del proyecto local
+        project.toDos = updatedToDos;
+
+        // 2. Creamos una nueva instancia clonada para forzar el renderizado
+        const updatedProjectInstance = new Project(project);
+
+        // 3. 🔄 Sincronizamos con el array global de ProjectsManager en memoria
+        props.projectsManager.list = props.projectsManager.list.map((proj) => {
+            if (proj.id === project.id) {
+                return updatedProjectInstance; // Reemplazamos la instancia obsoleta por la actualizada con To-Dos
+            }
+            return proj;
+        });
+
+        // 4. Actualizamos el estado de React para renderizar los cambios en los To-Dos
+        setProject(updatedProjectInstance);
     };
 
 	const pruebaOnChange = (value:string)=>{
 		console.log("Esto es el valor: ", value);
 	}
+
+	// Red de protección por si .toDos no se inicializó correctamente en el JSON anterior
+    const currentToDos = project.toDos || [];
+
 	return(
 
 		<div className="page" id="project-details" >
@@ -81,7 +112,7 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
 						<div>
 							<SearchBox onChange={(value)=>{pruebaOnChange(value)}}/>
 						</div>
-						<ToDoSection/>
+						<ToDoSection toDos={currentToDos} onToDosChange={handleToDosChange}/>
 					</div>
 				</div>
 				<div id="viewer-container"	className="dashboard-card"	style={{ minWidth: 0 }}>
