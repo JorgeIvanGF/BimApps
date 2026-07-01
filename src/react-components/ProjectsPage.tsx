@@ -7,6 +7,8 @@ import { ProjectCard} from './ProjectCard';
 import { ProjectModal } from './ProjectModal'; // Importamos el nuevo modal
 import { SearchBox } from './ToDo/SearchBox';
 
+import { ThreeViewer } from './Viewer/ThreeViewer';
+
 interface ProjectPageProps{
 	projectsManager: ProjectsManager;
 }

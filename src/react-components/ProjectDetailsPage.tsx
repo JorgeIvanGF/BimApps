@@ -10,6 +10,7 @@ import { ToDoHeader } from './ToDo/ToDoHeader';
 import { SearchBox } from './ToDo/SearchBox';
 import { ToDoSection} from './ToDo/ToDoSection';
 import { IToDo } from './ToDo/ToDoItem'; // Importamos la interfaz del To-Do
+import { ThreeViewer } from './Viewer/ThreeViewer';
 
 
 interface ProjectDetailsPageProps{
@@ -115,8 +116,9 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
 						<ToDoSection toDos={currentToDos} onToDosChange={handleToDosChange}/>
 					</div>
 				</div>
-				<div id="viewer-container"	className="dashboard-card"	style={{ minWidth: 0 }}>
-				</div>
+				{/* Viewer Container */}
+				<ThreeViewer/>
+
 			</div>
 
 			{/* Rendring the Modal of Edit */}

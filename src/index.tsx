@@ -3,11 +3,6 @@ import * as React from "react" // React
 import * as ReactDOM from "react-dom/client" 
 import * as Router from "react-router-dom"  // The Router
 
-import { GUI } from "three/examples/jsm/libs/lil-gui.module.min.js"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js"
-import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js"
-
 import { Sidebar } from "./react-components/Sidebar"
 import { ProjectsPage } from "./react-components/ProjectsPage"
 import { ProjectDetailsPage } from "./react-components/ProjectDetailsPage"
