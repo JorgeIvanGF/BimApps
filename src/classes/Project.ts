@@ -29,7 +29,9 @@ export class Project implements IProject {
   //Class internals  
 	cost: number = 0
 
-  	constructor(data: IProject) {
+	
+
+  	constructor(data: IProject , id = uuidv4()) {
 		// Asignación explícita: Súper segura, legible y adorada por TypeScript
 		this.name = data.name
 		this.description = data.description
@@ -39,7 +41,8 @@ export class Project implements IProject {
 		this.progress = data.progress;
 
 		if(data.toDos){this.toDos = data.toDos}
-		this.id = data.id ? data.id : uuidv4()
+		console.log("El ID es ", id)
+		this.id = data.id ? data.id : id
 	}
 
 	initials():string{
@@ -50,5 +53,32 @@ export class Project implements IProject {
 			: this.name.substring(0, 2).toUpperCase();
 		return (initials);
 	}
+
+		// ToDos Management Methods ---------------------------------------------------------
+
+	// To add a new ToDo to the project____________________________________________________
+	addToDo(todo: IToDo): void {
+
+		// To Sanitize and handle To-Do Dates(from JSON files)
+		let processedDate = new Date();
+		if (todo.date) {
+			const parsedDate = new Date(todo.date);
+			processedDate = isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+		}
+
+		if(!this.toDos) return
+		this.toDos.push({
+			...todo,
+			id: todo.id || uuidv4(),
+			date: processedDate,
+		});
+	}
+
+	// To Get a specific ToDo by its ID__________________________________________________
+	getToDo(id: string): IToDo | undefined {
+		if(!this.toDos) return;
+		return this.toDos.find(todo => todo.id === id);
+	}
+	
 
 }

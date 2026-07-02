@@ -1,13 +1,14 @@
 import * as React from 'react';
 import * as Router from "react-router-dom";
+import * as Firestore from "firebase/firestore"
 
 import { IProject, Project, ProjectStatus, UserRole } from '../classes/Project';
 import { ProjectsManager } from '../classes/ProjectsManager';
 import { ProjectCard} from './ProjectCard';
 import { ProjectModal } from './ProjectModal'; // Importamos el nuevo modal
 import { SearchBox } from './ToDo/SearchBox';
+import { firebaseDB } from '../firebase'; // Data Base from Firestore
 
-import { ThreeViewer } from './Viewer/ThreeViewer';
 
 interface ProjectPageProps{
 	projectsManager: ProjectsManager;
@@ -26,6 +27,38 @@ export function ProjectsPage(props:ProjectPageProps) {
 		// ___________________________________________________________________________
 	props.projectsManager.onCreatedProject = () => {setProjects([...props.projectsManager.list])}
 	props.projectsManager.onDeletedProject = () => {setProjects([...props.projectsManager.list])}
+
+
+	// Firestore
+
+	const getFirestoreProjects = async () => {
+
+		//the path is obtained from the Firebase webpage
+		const projectsCollection = Firestore.collection(firebaseDB,"/projects") as Firestore.CollectionReference<IProject>
+		//get the info
+		const firebaseProjects = Firestore.getDocs(projectsCollection)
+		// To retreive each data project
+		for(const doc of (await firebaseProjects).docs){
+			// to get the actual Data
+			const data = doc.data();
+			// To fix the Date issue
+			const project:IProject = {
+				...data,
+				finishDate: (data.finishDate as unknown as Firestore.Timestamp).toDate()
+			}
+			try{
+				// Create a new Project
+				props.projectsManager.newProject(project, doc.id);
+			}catch (error){
+				// If already exist one with the same name => Update the info
+				props.projectsManager.updateProject(project as Project, project)
+			}
+		}
+	}
+
+	React.useEffect(()=>{
+		getFirestoreProjects();
+	},[ ])
 
 	// To Update the UI of the ProjectsPage
 	const projectCards = projects.map((project) => {
