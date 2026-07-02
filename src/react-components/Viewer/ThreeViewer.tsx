@@ -6,50 +6,73 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GUI } from "three/examples/jsm/libs/lil-gui.module.min.js"; // For simple Controls Interface in the scene
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js"; // For the OBJ Loader
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js"; // For the MTL file for where to apply the Materials (in the OBJ file)
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'; // Fot GLTF files
+import { GLTF, GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'; // Fot GLTF files
 
 
 export function ThreeViewer(){
 
+	// The variables to Nullify when closing the viewer
+	let scene: THREE.Scene | null;
+	let camera: THREE.PerspectiveCamera | null;
+	let renderer: THREE.WebGLRenderer | null;
+	let boxGeometry: THREE.BoxGeometry | null;
+	let basicMaterial: THREE.MeshStandardMaterial | null;
+	let cube: THREE.Mesh | null;
+	let axes: THREE.AxesHelper | null;
+	let grid: THREE.GridHelper | null;
+	let gui: GUI | null;
+	let cubeControls: GUI | null;
+	let ambientLight: THREE.AmbientLight | null;
+	let directionalLight: THREE.DirectionalLight | null;
+	let spotLight: THREE.SpotLight | null;
+	let objLoader: OBJLoader | null;
+	let mtlLoader: MTLLoader | null;
+	let mesh:GLTF | null;
+
+	let animationFrameId: number;
+	let resizeObserver: ResizeObserver | null = null;
+
+
 	// To assure everything is loaded before execute the code
-	React.useEffect(()=>{
-
-		const setViewer = () =>{
-			
-		}
-
+	const setViewer = () =>{
 		const viewerContainer = document.getElementById("viewer-container") as HTMLElement; 
 		if (!viewerContainer) return;
 	
 		// 1. INITIALIZE THREE.JS CORE SCENE______________________________________________
-		const scene = new THREE.Scene(); 
-		const camera = new THREE.PerspectiveCamera(75);
+		scene = new THREE.Scene();
+		if(!scene){return};
+		camera = new THREE.PerspectiveCamera(75);
 		camera.position.z = 5;
 	
-		const renderer = new THREE.WebGLRenderer({alpha:true, antialias:true}); 
+		renderer = new THREE.WebGLRenderer({alpha:true, antialias:true}); 
 		viewerContainer.append(renderer.domElement);
 	
 		// Create scene actors using strictly your elements
-		const boxGeometry = new THREE.BoxGeometry(); 
-		const basicMaterial = new THREE.MeshStandardMaterial();
-		const cube = new THREE.Mesh(boxGeometry, basicMaterial);
+		boxGeometry = new THREE.BoxGeometry(); 
+		basicMaterial = new THREE.MeshStandardMaterial();
+		cube = new THREE.Mesh(boxGeometry, basicMaterial);
 		
 		
-		const axes = new THREE.AxesHelper(); // Axes
+		axes = new THREE.AxesHelper(); // Axes
 		
 		// Grid
-		const grid = new THREE.GridHelper();
+		grid = new THREE.GridHelper();
 		grid.material.transparent = true;
 		grid.material.opacity = 0.4;
 		grid.material.color = new THREE.Color("#f1f1f1");
 		
 		// Controls Simple Interface:
-		const gui = new GUI()
+		gui = new GUI()
 		
 		// Cube
-		const cubeControls = gui.addFolder("Cube"); // Create a place passing the folder's name to add the controls
+		if (!cube) return;
+		cubeControls = gui.addFolder("Cube"); // Create a place passing the folder's name to add the controls
 		cubeControls.add(cube, "visible");
-		cubeControls.addColor(cube.material, "color");
+
+		// 🌟 SOLUCIÓN para "color": Le indicamos a TypeScript que trate el material explícitamente como MeshStandardMaterial
+		const currentMaterial = cube.material as THREE.MeshStandardMaterial;
+		cubeControls.addColor(currentMaterial, "color");
+
 		cubeControls.add(cube.position, "x", -10,10,0.5); // Only add ONE property at a time
 		cubeControls.add(cube.position, "y", -10,10,0.5); // Only add ONE property at a time
 		cubeControls.add(cube.position, "z", -10,10,0.5); // Only add ONE property at a time
@@ -58,11 +81,11 @@ export function ThreeViewer(){
 		// ...............................   LIGHTS   .........................................................
 		
 			// Ambient Light
-		const ambientLight = new THREE.AmbientLight();
+		ambientLight = new THREE.AmbientLight();
 		ambientLight.intensity = 0.6;
 		
 			// Directional Light
-		const directionalLight = new THREE.DirectionalLight(); 
+		directionalLight = new THREE.DirectionalLight(); 
 		const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight,0.5,"#a6ff00");
 	
 		const directionalLightControls = gui.addFolder("Directional Light");
@@ -74,7 +97,7 @@ export function ThreeViewer(){
 		directionalLightControls.add(directionalLight.position, "z", -20,20,0.5)
 	
 			// Spot Lighht
-		const spotLight = new THREE.SpotLight();
+		spotLight = new THREE.SpotLight();
 		const spotLightHelper = new THREE.SpotLightHelper(spotLight);
 	
 		const spotLightControls = gui.addFolder("SpotLight");
@@ -95,11 +118,13 @@ export function ThreeViewer(){
 		
 		
 			// OBJ file
-		const objLoader = new OBJLoader();
-		const mtlLoader = new MTLLoader();
-	
-			// First Set the Materials and then Apply them to the obj
+		objLoader = new OBJLoader();
+		mtlLoader = new MTLLoader();
+
+		
+		// First Set the Materials and then Apply them to the obj
 		mtlLoader.load("../Assets/Gear/Gear1.mtl", (materials) =>{
+			if(!objLoader) return;
 			materials.preload();
 			objLoader.setMaterials(materials);
 			objLoader.load("../Assets/Gear/Gear1.obj", (mesh) =>{
@@ -111,9 +136,11 @@ export function ThreeViewer(){
 			// GLTF File
 		const gltfLoader = new GLTFLoader();
 		gltfLoader.load("../../myAssets/Assets/Fosil/scene.gltf", (gltf) => {
+			if (!scene || !cube) {return}
 			scene.remove(cube);
 			const model = gltf.scene;
 			scene.add(model);
+			mesh = gltf;
 		})
 	
 	
@@ -128,6 +155,8 @@ export function ThreeViewer(){
 			const height = viewerContainer.clientHeight;
 	
 			if (width === 0 || height === 0) return;
+
+			if(!renderer || !camera) return;
 	
 			renderer.setSize(width, height);
 			camera.aspect = width / height;
@@ -137,7 +166,9 @@ export function ThreeViewer(){
 		// 4. INFINITE ANIMATION LOOP_____________________________________________________
 		// This loops independently at 60fps to redraw the frame when the mouse moves
 		function renderScene() {
-			window.requestAnimationFrame(renderScene);
+
+			// 🔥 Capturamos el ID del frame actual antes de continuar el bucle
+   			animationFrameId = window.requestAnimationFrame(renderScene);
 	
 			// Required to tell the controls to evaluate mouse/touch dragging
 			cameraControls.update();
@@ -145,13 +176,14 @@ export function ThreeViewer(){
 			// For Lights Helpers Updates
 			directionalLightHelper.update();
 			spotLightHelper.update();
-	
+
+			if(!renderer || !scene || !camera) return;
 			// Take the snapshot of the scene
 			renderer.render(scene, camera);
 		}
 	
 		// 5. OBSERVERS & TRIGGERS __________________________________________________________
-		const resizeObserver = new ResizeObserver(() => {
+		resizeObserver = new ResizeObserver(() => {
 			resizeViewer();
 		});
 		resizeObserver.observe(viewerContainer);
@@ -161,6 +193,63 @@ export function ThreeViewer(){
 		
 		// Start the animation engine!
 		renderScene();
+
+	}
+	React.useEffect(()=>{
+		setViewer();
+
+		// 🛑 FUNCIÓN DE LIMPIEZA (Se ejecuta automáticamente cuando te sales del visor)
+        return () => {
+            console.log("Cleaning up Three.js Viewer resources...");
+
+            // 1. Frenar el motor de animación (Cancela el requestAnimationFrame)
+            if (animationFrameId) {
+                window.cancelAnimationFrame(animationFrameId);
+            }
+
+            // 2. Desconectar el observador de cambio de tamaño
+            if (resizeObserver) {
+                resizeObserver.disconnect();
+                resizeObserver = null;
+            }
+
+            // 3. Destruir la interfaz flotante GUI (Evita que se dupliquen paneles)
+            if (gui) {
+                gui.destroy();
+                gui = null;
+            }
+
+            // 4. Liberar buffers de la GPU (VRAM)
+            if (boxGeometry) {
+                boxGeometry.dispose();
+                boxGeometry = null;
+            }
+            if (basicMaterial) {
+                basicMaterial.dispose();
+                basicMaterial = null;
+            }
+
+            // 5. Eliminar el lienzo canvas del DOM y apagar el WebGLRenderer
+            if (renderer) {
+                renderer.domElement.remove();
+                renderer.dispose();
+                renderer = null;
+            }
+
+            // 6. Nullify de las variables restantes para recolección de basura (Garbage Collector)
+            scene = null;
+            camera = null;
+            cube = null;
+            axes = null;
+            grid = null;
+            cubeControls = null;
+            ambientLight = null;
+            directionalLight = null;
+            spotLight = null;
+            objLoader = null;
+            mtlLoader = null;
+            mesh = null;
+        }
 	}, [ ])
 
 	return(
