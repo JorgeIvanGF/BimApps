@@ -12,6 +12,10 @@ import { ToDoSection} from './ToDo/ToDoSection';
 import { IToDo } from './ToDo/ToDoItem'; // Importamos la interfaz del To-Do
 import { ThreeViewer } from './Viewer/ThreeViewer';
 
+// For Firestore DataBase
+import { deleteDocument } from '../firebase';
+import { updateDocument } from '../firebase';
+
 
 interface ProjectDetailsPageProps{
 	projectsManager: ProjectsManager;
@@ -46,7 +50,12 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
 	}
 
 	// FN when User clicks on "Accept" Btn 
-	const handleUpdateProject = (updatedData: IProject) => {
+	const handleUpdateProject = async (updatedData: IProject) => {
+
+		// Update the Project in Firestore DataBase:
+		await updateDocument<IProject>(`/projects`, project.id, updatedData);
+		console.log("¡Proyecto actualizado con éxito en Firestore!"); //TO DEBUG
+
         // Modificamos directamente las propiedades de la instancia de tu clase original
         project.name = updatedData.name;
         project.description = updatedData.description;
@@ -55,12 +64,15 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
         project.finishDate = updatedData.finishDate;
 		project.progress = updatedData.progress;
 
-		const updatedProjectInstance = new Project(project);
+		const updatedProjectInstance = new Project(project, project.id);
 
         // 🔄 Sincronizamos la lista global del manager con los nuevos datos generales
         props.projectsManager.list = props.projectsManager.list.map((proj) => {
             return proj.id === project.id ? updatedProjectInstance : proj;
         });
+
+
+
 
         // ¡CLAVE! Seteamos el estado con una copia del proyecto modificado. 
         // Esto obliga a React a refrescar la pantalla inmediatamente con los textos nuevos.
@@ -94,15 +106,27 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
 	// Red de protección por si .toDos no se inicializó correctamente en el JSON anterior
     const currentToDos = project.toDos || [];
 
+	// Para DELETE Projects __________________________________________________________________
+	const navigateTo = Router.useNavigate() // Navegar a ...
+	props.projectsManager.onDeletedProject = async (id) => {
+		await deleteDocument(`/projects`,id)
+		navigateTo("/") // Navigate to Home
+	}
+
 	return(
 
 		<div className="page" id="project-details" >
 			{/* Header */}
-			<header>
+			<header>				
 				<div>
 					<h2 data-project-info="name">{project.name}</h2>
 					<p style={{ color: "#969696" }}>{project.description}</p>
 				</div>
+				<button 
+					onClick={()=>{props.projectsManager.deleteProject(project.id)}} 
+					style={{backgroundColor:"#b40000b2"}}> Delete Project
+				</button>
+				
 			</header>
 			{/* Main Content */}
 			<div className="main-page-content">

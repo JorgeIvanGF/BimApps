@@ -1,7 +1,9 @@
 // Import the functions you need from the SDKs you need
+import * as Firestore from "firebase/firestore";
+
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore } from "firebase/firestore";
+
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -21,4 +23,32 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-export const firebaseDB = getFirestore();
+
+// Reference to the DataBase
+export const firestoreDB = Firestore.getFirestore();
+
+// FN to get the Collection
+export function getCollection <T> (path: string){
+	return Firestore.collection(firestoreDB,path) as Firestore.CollectionReference<T>
+
+}
+
+// FN to Delete a Project "Document"
+export async function deleteDocument(path:string, id:string){
+	// get the doc with the Collection Path and the doc ID
+	const doc = Firestore.doc(firestoreDB,`${path}/${id}`);
+	await Firestore.deleteDoc(doc);
+}
+
+// FN to UPDATE a Project "Document"
+// Type: the updateDoc FN MUST have an Object as a 2nd Arg, so its needed to specify the tipe and the kind
+//		ESTRUCTURA DE ENTRADA (TYPES & ARGS):
+		/* 1. <T extends Record<string, any>> (Genérico):
+		* - Es un "molde flexible" pero seguro. Obliga a que el argumento `data` sea estrictamente 
+		* 	un objeto de JavaScript ("keys" de tipo string y "values" de cualquier tipo).
+		* - Te permite indicarle a la función qué tipo de interfaz estás actualizando (ej: <IProject>) */
+export async function updateDocument<T extends Record<string, any>> (path:string, id:string, data:T){
+	// get the doc with the Collection Path and the doc ID
+	const doc = Firestore.doc(firestoreDB,`${path}/${id}`);
+	await Firestore.updateDoc(doc, data);
+}

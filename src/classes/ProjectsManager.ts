@@ -4,7 +4,7 @@ export class ProjectsManager {
 
 	list: Project[] = []
 	onCreatedProject = (project:Project) => {} // A callback FN when a PJ is Created
-	onDeletedProject = () => {} // A callback FN when a PJ is Deleted
+	onDeletedProject = (id:string) => {} // A callback FN when a PJ is Deleted
 
 /* 	constructor() {
 		const project = this.newProject({
@@ -100,7 +100,7 @@ export class ProjectsManager {
       return project.id !== id
     })
     this.list = remaining
-	this.onDeletedProject()
+	this.onDeletedProject(id)
   }
   
   exportToJSON(fileName: string = "projects") {

@@ -7,12 +7,15 @@ import { ProjectsManager } from '../classes/ProjectsManager';
 import { ProjectCard} from './ProjectCard';
 import { ProjectModal } from './ProjectModal'; // Importamos el nuevo modal
 import { SearchBox } from './ToDo/SearchBox';
-import { firebaseDB } from '../firebase'; // Data Base from Firestore
+import { getCollection } from '../firebase'; // Data Base from Firestore
 
 
 interface ProjectPageProps{
 	projectsManager: ProjectsManager;
 }
+
+//Get the reference of the Collection from the Firestore webpage using the custom FN created
+const projectsCollection = getCollection<IProject>("/projects");
 
 export function ProjectsPage(props:ProjectPageProps) {
 
@@ -29,17 +32,15 @@ export function ProjectsPage(props:ProjectPageProps) {
 	props.projectsManager.onDeletedProject = () => {setProjects([...props.projectsManager.list])}
 
 
-	// Firestore
+	// Firestore _________________________________________________________________________
 
 	const getFirestoreProjects = async () => {
 
-		//the path is obtained from the Firebase webpage
-		const projectsCollection = Firestore.collection(firebaseDB,"/projects") as Firestore.CollectionReference<IProject>
-		//get the info
+		//get the info from DataBase
 		const firebaseProjects = Firestore.getDocs(projectsCollection)
 		// To retreive each data project
 		for(const doc of (await firebaseProjects).docs){
-			// to get the actual Data
+			// To get the actual Data
 			const data = doc.data();
 			// To fix the Date issue
 			const project:IProject = {
@@ -59,6 +60,7 @@ export function ProjectsPage(props:ProjectPageProps) {
 	React.useEffect(()=>{
 		getFirestoreProjects();
 	},[ ])
+
 
 	// To Update the UI of the ProjectsPage
 	const projectCards = projects.map((project) => {
@@ -85,7 +87,7 @@ export function ProjectsPage(props:ProjectPageProps) {
 		modal.showModal()
 	}
 
-  	const onFormSubmit = (e: React.FormEvent) => {
+/*   	const onFormSubmit = (e: React.FormEvent) => {
 		const projectForm = document.getElementById("new-project-form")
 		if (!(projectForm && projectForm instanceof HTMLFormElement)) {return}
 		e.preventDefault()
@@ -99,6 +101,12 @@ export function ProjectsPage(props:ProjectPageProps) {
 		progress: Number(formData.get("progress"))
 	}
 	try {
+
+		// Firestore_____________________________________________________________
+			//Add the data to the collection obtained from the Form
+		Firestore.addDoc(projectsCollection, projectData)
+
+
 		const project = props.projectsManager.newProject(projectData)
 		// console.log(project) // TO DEBUG
 		projectForm.reset()
@@ -108,7 +116,30 @@ export function ProjectsPage(props:ProjectPageProps) {
 	} catch (err) {
 	  	alert(err)
 		}
+	} */
+
+
+	// To Add the new created project to the FirestoreDataBase:
+		// Nota: El projectData viene del componente HIJO
+	const onFormSubmit = async (projectData:IProject)=>{
+		try {
+			// 1. Guardamos PRIMERO en Firestore
+			const docRef = await Firestore.addDoc(projectsCollection, projectData);
+			console.log("Guardado en Firestore con ID:", docRef.id);
+
+			// 2. Guardamos en tu manager local pasándole el ID real que nos dio Firebase
+			props.projectsManager.newProject(projectData, docRef.id);
+
+			// 3. Cerramos el modal limpiamente
+			const modal = document.getElementById("new-project-modal");
+			if (modal && modal instanceof HTMLDialogElement) {
+				modal.close();
+			}
+		} catch (err) {
+			alert("Error al guardar en Firestore: " + err);
+		}
 	}
+
 
 	const onExportProject = () => {
 		props.projectsManager.exportToJSON()
@@ -126,7 +157,8 @@ export function ProjectsPage(props:ProjectPageProps) {
   	return (
 		<div className="page" id="projects-page" style={{ display: "flex" }}>
 			{/* Form for New Project */}
-			<ProjectModal id="new-project-modal" title="New Project" onSubmit={(projectData) => props.projectsManager.newProject(projectData)}/>
+			{/* <ProjectModal id="new-project-modal" title="New Project" onSubmit={(projectData) => props.projectsManager.newProject(projectData)}/> */}
+			<ProjectModal id="new-project-modal" title="New Project" onSubmit={onFormSubmit} />
 			{/* Header */}
 			<header>
 				<h2>Projects</h2>

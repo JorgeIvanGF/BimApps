@@ -5,7 +5,7 @@ interface ProjectModalProps {
 	id: string;
 	title: string;
 	project?: Project; // Opcional: si viene, es modo EDICIÓN. Si no, es modo CREACIÓN.
-	onSubmit: (data: IProject) => void;
+	onSubmit: (data: IProject) => void; // Para avisarle al padre
 }
 
 export function ProjectModal(props: ProjectModalProps) {
