@@ -362,3 +362,8 @@ input:focus, textarea:focus, select:focus {
 	color: #969696; 
 	font-Size: var(--font-sm);
 }
+
+
+.project-card bim-label{
+	white-space: normal;
+}

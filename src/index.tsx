@@ -8,7 +8,21 @@ import { ProjectsPage } from "./react-components/ProjectsPage"
 import { ProjectDetailsPage } from "./react-components/ProjectDetailsPage"
 import { ProjectsManager } from './classes/ProjectsManager';
 
+// Importing That Open Engine UI
+import * as BUI from "@thatopen/ui"
 
+
+// Initialize the UI
+BUI.Manager.init();
+
+// To inform TypeScript whta is a Bim-Label
+declare global {
+	namespace JSX{
+		interface IntrinsicElements{
+			"bim-label": any;
+		}
+	}
+}
 
 // Create a ProejctsManager Instance
 const projectsManager = new ProjectsManager();
