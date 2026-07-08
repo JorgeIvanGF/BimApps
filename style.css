@@ -25,6 +25,12 @@
   font-size: var(--font-base);
 }
 
+body {
+  background-color: var(--background); /* Evita destellos blancos si algo se desborda */
+  margin: 0;
+}
+
+
 #app {
   display: grid;
   grid-template-columns: 300px 1fr;
@@ -32,8 +38,17 @@
   height: 100vh;
   background-color: var(--background);
   color: #fff;
+  overflow: hidden; /* Empuja el scroll únicamente al contenedor interno */
 }
 
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto; /* Permite scroll vertical interno si hay muchos proyectos */
+  background-color: var(--background); /* Garantiza que mantenga el color oscuro */
+}
 
 /* General Styles */
 
@@ -71,16 +86,11 @@ button:hover {
   background-color: var(--primary-400);
 }
 
-.page {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
 
 /* Sidebar styles */
 
 #sidebar {
-  background-color: var(--background-100);
+  background-color: var(--background-200);
   padding: 25px;
   display: flex;
   flex-direction: column;
@@ -127,7 +137,7 @@ header {
 }
 
 .project-card {
-  background-color: var(--background-100);
+  background-color: var(--background-200);
   border-radius: 8px;
   cursor: pointer;
 }
@@ -161,16 +171,37 @@ header {
   width: 100%;
 }
 
-#projects-list {
+#projects-list1 {
   display: grid;
   padding: 20px 40px;
   gap: 30px;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  flex-grow: 1; /* <-- Agrega esto para que se estire verticalmente */
 }
 
 #projects-list a{
 	text-decoration: none;
 	color:white;
+}
+
+
+
+/* For Project List horizontally displayed*/
+#projects-list {
+	display: grid;
+	padding: 20px;
+	/* Crea columnas de mínimo 240px y máximo lo que sobre de espacio */
+	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+	gap: 20px; /* Espacio entre las tarjetas */
+	align-items: start; /* Evita que las tarjetas se estiren verticalmente si tienen poco contenido */
+}
+
+
+#projects-pages {
+  background-color: #747475; /* Pon aquí el color oscuro exacto de tus tarjetas/fondo */
+  min-height: 100vh;         /* Obliga a la página a cubrir toda la pantalla del usuario */
+  display: flex;
+  flex-direction: column;    /* Alinea el header arriba y la lista abajo */
 }
 
 .action-icon {
@@ -185,6 +216,9 @@ header {
   color: white;
   background-color: var(--primary);
 }
+
+
+
 
 /* Form Styles */
 
@@ -280,6 +314,16 @@ input:focus, textarea:focus, select:focus {
 .btn-secondary:hover {
   background-color: var(--primary); 
   outline: none;
+}
+
+.addToDoBtn{
+	/* outline: 0.2px solid #969696; */
+	cursor: pointer;
+	
+}
+.addToDoBtn:hover{
+	background-color: var(--primary); 
+	outline: none;
 }
 
 .todo-item {

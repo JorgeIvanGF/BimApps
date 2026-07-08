@@ -52,51 +52,99 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
 	// FN when User clicks on "Accept" Btn 
 	const handleUpdateProject = async (updatedData: IProject) => {
 
-		// Update the Project in Firestore DataBase:
-		await updateDocument<IProject>(`/projects`, project.id, updatedData);
-		console.log("¡Proyecto actualizado con éxito en Firestore!"); //TO DEBUG
+		try{
+			// Reparar Fecha:
+			const safeFinishDate = updatedData.finishDate ? new Date(updatedData.finishDate) : new Date();
 
-        // Modificamos directamente las propiedades de la instancia de tu clase original
-        project.name = updatedData.name;
-        project.description = updatedData.description;
-        project.status = updatedData.status;
-        project.userRole = updatedData.userRole;
-        project.finishDate = updatedData.finishDate;
-		project.progress = updatedData.progress;
+			// 2. 🚨 LA SOLUCIÓN CLAVE: Sanitizar y reparar las fechas de cada ToDo individualmente
+			const rawToDos = project.toDos || [];
+			const safeToDos = rawToDos.map(todo => {
+				let processedToDoDate = new Date();
+				if (todo.date) {
+					const parsedDate = new Date(todo.date);
+					// Si la fecha del ToDo no es válida (Invalid Date), usamos la de hoy como salvavidas
+					processedToDoDate = isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+				}
+				return {
+					...todo,
+					date: processedToDoDate // Nos aseguramos de mandar un objeto Date real a Firestore
+				};
+			});
 
-		const updatedProjectInstance = new Project(project, project.id);
+			// Inyectamos los toDos actuales del proyecto en los datos que van a Firestore
+			const dataToSend: IProject = {
+				...updatedData,
+				finishDate:safeFinishDate,
+				toDos: safeToDos // 👈 Aseguramos que viaje el array de tareas
+			};
 
-        // 🔄 Sincronizamos la lista global del manager con los nuevos datos generales
-        props.projectsManager.list = props.projectsManager.list.map((proj) => {
-            return proj.id === project.id ? updatedProjectInstance : proj;
-        });
-
-
-
-
-        // ¡CLAVE! Seteamos el estado con una copia del proyecto modificado. 
-        // Esto obliga a React a refrescar la pantalla inmediatamente con los textos nuevos.
-        setProject(updatedProjectInstance); // TO DEBUG
+			// Update the Project in Firestore DataBase:
+			await updateDocument<IProject>(`/projects`, project.id, dataToSend);
+			console.log("¡Proyecto con ToDos actualizado con éxito en Firestore!"); //TO DEBUG
+	
+			// Modificamos directamente las propiedades de la instancia de tu clase original
+			project.name = updatedData.name;
+			project.description = updatedData.description;
+			project.status = updatedData.status;
+			project.userRole = updatedData.userRole;
+			project.finishDate = safeFinishDate;
+			project.progress = updatedData.progress;
+			project.toDos = safeToDos; // Sincronizamos las tareas locales purificadas
+			
+			const updatedProjectInstance = new Project(project, project.id);
+	
+			// 🔄 Sincronizamos la lista global del manager con los nuevos datos generales
+			props.projectsManager.list = props.projectsManager.list.map((proj) => {
+				return proj.id === project.id ? updatedProjectInstance : proj;
+			});
+	
+			// ¡CLAVE! Seteamos el estado con una copia del proyecto modificado. 
+			// Esto obliga a React a refrescar la pantalla inmediatamente con los textos nuevos.
+			setProject(updatedProjectInstance); // 
+		}
+		catch (error){
+			// Si el usuario se queda sin internet o fallan las reglas de Firebase, protegemos la app
+			console.error("Error al actualizar en Firestore:", error);
+			alert("Hubo un error de conexión. No se pudieron guardar los cambios en la base de datos.");
+		}
     };
 
 	// ⚡ OPERACIÓN MAESTRA: Manejador para coordinar y sincronizar los To-Dos con el ProjectsManager
-    const handleToDosChange = (updatedToDos: IToDo[]) => {
-        // 1. Guardamos la nueva lista en la instancia del proyecto local
-        project.toDos = updatedToDos;
+    const handleToDosChange = async (updatedToDos: IToDo[]) => {
 
-        // 2. Creamos una nueva instancia clonada para forzar el renderizado
-        const updatedProjectInstance = new Project(project);
+		try{
 
-        // 3. 🔄 Sincronizamos con el array global de ProjectsManager en memoria
-        props.projectsManager.list = props.projectsManager.list.map((proj) => {
-            if (proj.id === project.id) {
-                return updatedProjectInstance; // Reemplazamos la instancia obsoleta por la actualizada con To-Dos
-            }
-            return proj;
-        });
-
-        // 4. Actualizamos el estado de React para renderizar los cambios en los To-Dos
-        setProject(updatedProjectInstance);
+			// 	******* AQUI IRÍA GUARDAR EL LIST UPDATED DE TODOS *********
+			// Creamos el payload de actualización parcial conteniendo únicamente el array modificado
+			const dataToSend = {
+				toDos: updatedToDos
+			};
+			// Actualizamos de manera directa la propiedad "toDos" del documento en la base de datos
+			await updateDocument<any>(`/projects`, project.id, dataToSend);
+			console.log("¡Lista de ToDos actualizada con éxito en Firestore!");
+		
+	
+			// 1. Guardamos la nueva lista en la instancia del proyecto local
+			project.toDos = updatedToDos;
+	
+			// 2. Creamos una nueva instancia clonada para forzar el renderizado
+			const updatedProjectInstance = new Project(project, project.id);
+	
+			// 3. 🔄 Sincronizamos con el array global de ProjectsManager en memoria
+			props.projectsManager.list = props.projectsManager.list.map((proj) => {
+				if (proj.id === project.id) {
+					return updatedProjectInstance; // Reemplazamos la instancia obsoleta por la actualizada con To-Dos
+				}
+				return proj;
+			});
+	
+			// 4. Actualizamos el estado de React para renderizar los cambios en los To-Dos
+			setProject(updatedProjectInstance);
+		}
+		catch (error){
+			console.error("Error al actualizar los ToDos en Firestore:", error);
+        	alert("Hubo un error de conexión. La tarea se actualizó en pantalla pero no pudo guardarse en la nube.");
+		}
     };
 
 	const pruebaOnChange = (value:string)=>{
@@ -134,9 +182,9 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
 					<ProjectInfo project={project} onEditClick={handleOpenEditModal}/>
 					{/* To-Do Main */}
 					<div className="dashboard-card" style={{ flexGrow: 1 }}>
-						<div>
+						{/* <div>
 							<SearchBox onChange={(value)=>{pruebaOnChange(value)}}/>
-						</div>
+						</div> */}
 						<ToDoSection toDos={currentToDos} onToDosChange={handleToDosChange}/>
 					</div>
 				</div>

@@ -65,7 +65,7 @@ export function ToDoModal(props: ToDoModalProps ) {
 						<label> <span className="material-icons-round">text_snippet</span> Description </label>
 						<input name="description" type="text" placeholder="Describe the task" />
 					</div>
-					<div className="form_field_container">
+					<div className="form-field-container">
 						<label> <span className="material-icons-round">verified_user</span>Status</label>
 						<select name="status">
 							<option value="Pending">Pending</option>
@@ -73,7 +73,7 @@ export function ToDoModal(props: ToDoModalProps ) {
 							<option value="Done">Done</option>
 						</select>
 					</div>
-					<div className="form_field_container">
+					<div className="form-field-container">
 						<label> <span className="material-icons-round">date_range</span>Due Date</label>
 						<input name="todo_Date" type="date" />
 					</div>

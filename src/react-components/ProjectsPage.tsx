@@ -42,10 +42,23 @@ export function ProjectsPage(props:ProjectPageProps) {
 		for(const doc of (await firebaseProjects).docs){
 			// To get the actual Data
 			const data = doc.data();
+
+			// 🛡️ BLINDAJE DE TO-DOS: Si el documento trae tareas, transformamos sus fechas
+			const safeToDos = data.toDos ? data.toDos.map((todo: any) => {
+				return {
+					...todo,
+					// Si la fecha viene de Firestore como Timestamp, la convertimos a Date real
+					date: todo.date && typeof todo.date.toDate === 'function' 
+						? todo.date.toDate() 
+						: new Date(todo.date)
+				};
+			}) : []; // Si no tiene toDos, inicializamos un array vacío
+
 			// To fix the Date issue
 			const project:IProject = {
 				...data,
-				finishDate: (data.finishDate as unknown as Firestore.Timestamp).toDate()
+				finishDate: (data.finishDate as unknown as Firestore.Timestamp).toDate(),
+				toDos: safeToDos // 👈 Le asignamos las tareas con sus fechas reparadas
 			}
 			try{
 				// Create a new Project
@@ -155,7 +168,7 @@ export function ProjectsPage(props:ProjectPageProps) {
 	}
 
   	return (
-		<div className="page" id="projects-page" style={{ display: "flex" }}>
+		<div className="page" id="projects-page">
 			{/* Form for New Project */}
 			{/* <ProjectModal id="new-project-modal" title="New Project" onSubmit={(projectData) => props.projectsManager.newProject(projectData)}/> */}
 			<ProjectModal id="new-project-modal" title="New Project" onSubmit={onFormSubmit} />

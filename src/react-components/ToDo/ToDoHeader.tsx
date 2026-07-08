@@ -18,7 +18,7 @@ export function ToDoHeader(props:TodoHeaderProps){
 					{/* <input type="text" placeholder="Search To-Do's by name"	style={{ width: "100%" }}/> */}
 					<SearchBox onChange={(value)=>{props.onSearchChange(value)}}/>
 				</div>
-				<span onClick={props.onAddClick} className="material-icons-round">add</span>
+				<span onClick={props.onAddClick}  className="material-icons-round addToDoBtn">add</span>
 			</div>
 		</div>
 	)

@@ -47,8 +47,18 @@ export async function deleteDocument(path:string, id:string){
 		* - Es un "molde flexible" pero seguro. Obliga a que el argumento `data` sea estrictamente 
 		* 	un objeto de JavaScript ("keys" de tipo string y "values" de cualquier tipo).
 		* - Te permite indicarle a la función qué tipo de interfaz estás actualizando (ej: <IProject>) */
-export async function updateDocument<T extends Record<string, any>> (path:string, id:string, data:T){
+export async function updateDocument1<T extends Record<string, any>> (path:string, id:string, data:T){
 	// get the doc with the Collection Path and the doc ID
 	const doc = Firestore.doc(firestoreDB,`${path}/${id}`);
 	await Firestore.updateDoc(doc, data);
+}
+
+// FN to UPDATE a Project "Document" (Híbrida: Crea si no existe, actualiza si existe)
+export async function updateDocument<T extends Record<string, any>> (path:string, id:string, data:T){
+    // Obtenemos la referencia al documento con su ruta e ID
+    const docRef = Firestore.doc(firestoreDB, `${path}/${id}`);
+    
+    // 🚨 CAMBIO CLAVE: Usamos setDoc con { merge: true }
+    // Esto hace exactamente lo mismo que updateDoc, pero si el ID no existe en la nube, lo crea en vez de lanzar un error.
+    await Firestore.setDoc(docRef, data, { merge: true });
 }
