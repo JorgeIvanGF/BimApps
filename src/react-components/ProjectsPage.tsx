@@ -9,6 +9,8 @@ import { ProjectModal } from './ProjectModal'; // Importamos el nuevo modal
 import { SearchBox } from './ToDo/SearchBox';
 import { getCollection } from '../firebase'; // Data Base from Firestore
 
+import { appIcons } from '../globals';
+
 
 interface ProjectPageProps{
 	projectsManager: ProjectsManager;
@@ -174,14 +176,17 @@ export function ProjectsPage(props:ProjectPageProps) {
 			<ProjectModal id="new-project-modal" title="New Project" onSubmit={onFormSubmit} />
 			{/* Header */}
 			<header>
-				<h2>Projects</h2>
+				<bim-label style={{fontSize:"1.8rem",color:"white"}}>Projects List</bim-label>
 				<SearchBox onChange={(value) => {handleProjectSearch(value)}}/>
 				<div style={{ display: "flex", alignItems: "center", columnGap: 15 }}>
-				<span id="import-projects-btn" className="material-icons-round action-icon" onClick={onImportProject}>file_upload</span>
-				<span id="export-projects-btn" className="material-icons-round action-icon" onClick={onExportProject}>file_download</span>
-				<button onClick={onNewProjectClick} id="new-project-btn">
-					<span className="material-icons-round">add</span>New Project
-				</button>
+					<span id="import-projects-btn" className="material-icons-round action-icon" onClick={onImportProject}>file_upload</span>
+					<span id="export-projects-btn" className="material-icons-round action-icon" onClick={onExportProject}>file_download</span>
+					<button onClick={onNewProjectClick} id="new-project-btn">
+						<span className="material-icons-round">add</span>New Project
+					</button>
+					<bim-button label="Upload" icon={appIcons.UPLOAD} onclick={onImportProject} ></bim-button>
+					<bim-button label="Download" icon={appIcons.DOWNLOAD} onclick={onExportProject}></bim-button>
+					<bim-button label="New Project" icon={appIcons.ADD} onclick={onNewProjectClick}></bim-button>
 				</div>
 			</header>
 			{/* Projects List */}

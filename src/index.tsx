@@ -20,6 +20,8 @@ declare global {
 	namespace JSX{
 		interface IntrinsicElements{
 			"bim-label": any;
+			"bim-button": any;
+			"bim-text-input": any;
 		}
 	}
 }

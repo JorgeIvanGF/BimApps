@@ -12,33 +12,37 @@ interface ProjectCardProps{
 
 
 export function ProjectCard(props:ProjectCardProps) {
-	return (		
+	// Define the colors for the card
+	const backColor = "#ca8134";	
+	const infoColor = "#bdbdbd";
+
+	return (
 		<div className="project-card" onClick={()=>{}}>
 			<div className="card-header">
-				<p style={{backgroundColor: "#ca8134",padding: 10,borderRadius: 8,aspectRatio: 1,alignContent: "center"}}>
+				<bim-label className="avatar-initials"style={{ backgroundColor: backColor}} >
 					{props.project.initials()}
-				</p>
+				</bim-label>
 				<div>
-					<bim-label style={{color:"white", fontSize:"1.2rem"}}>{props.project.name}</bim-label>
-					<bim-label>{props.project.description}</bim-label>
+					<bim-label style={{color:"white", fontSize:"1.1rem"}}>{props.project.name}</bim-label>
+					<bim-label style={{fontSize:"0.8rem"}}>{props.project.description}</bim-label>
 				</div>
 			</div>
 			<div className="card-content">
 				<div className="card-property">
-					<bim-label icon={appIcons.STATUS} style={{ color: "#969696" }}>Status</bim-label >
-					<p>{props.project.status}</p>
+					<bim-label icon={appIcons.STATUS}>Status</bim-label >
+					<bim-label style={{ color: infoColor }}>{props.project.status}</bim-label>
 				</div>
 				<div className="card-property">
-					<p style={{ color: "#969696" }}>Role</p>
-					<p>{props.project.userRole}</p>
+					<bim-label icon={appIcons.ROLE}>Role</bim-label>
+					<bim-label style={{ color: infoColor }}>{props.project.userRole}</bim-label>
 				</div>
 				<div className="card-property">
-					<p style={{ color: "#969696" }}>Cost</p>
-					<p>{props.project.cost}</p>
+					<bim-label icon={appIcons.COST} >Cost</bim-label>
+					<bim-label style={{ color: infoColor }}>{props.project.cost}</bim-label>
 				</div>
 				<div className="card-property">
-					<p style={{ color: "#969696" }}>Estimated Progress</p>
-					<p>{props.project.progress}%</p>
+					<bim-label icon={appIcons.PROGRESS}>Estimated Progress</bim-label>
+					<bim-label style={{ color: infoColor }}>{props.project.progress}%</bim-label>
 				</div>
 			</div>
 		</div>
