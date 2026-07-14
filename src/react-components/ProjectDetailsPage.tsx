@@ -16,6 +16,10 @@ import { ThreeViewer } from './Viewer/ThreeViewer';
 import { deleteDocument } from '../firebase';
 import { updateDocument } from '../firebase';
 
+// For UI from That Open Engine
+import * as BUI from "@thatopen/ui"
+import { appIcons } from '../globals';
+
 
 interface ProjectDetailsPageProps{
 	projectsManager: ProjectsManager;
@@ -161,11 +165,51 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
 		navigateTo("/") // Navigate to Home
 	}
 
+	// VIEWER 3D _____________________________________________________________________________________
+	const viewerGrid = React.useRef<BUI.Grid <["Main"]>>(null); // Referencia al contenedor del visor 3D
+	React.useEffect(() => {
+		/* const grid = viewerGrid.current;
+		Esto es lo mismo que hacer: const { current: grid } = viewerGrid; */
+		const { current: grid } = viewerGrid;
+		if (!grid) return;
+
+		// Deinir los elementos del grid:-------------------------------------------------------------
+
+			// *** NOTE** : ALL the elements MUST have 2 properties: "TEMPLATE" and "INITIAL STATE"
+/* 							Template is a function that returns the HTML of the element, 
+							and Initial State is an object with the initial state of the element */
+		grid.elements = {
+			header: {
+				template: () => BUI.html `<div></div>`,
+				initialState: {}
+			},
+			sidebar: {
+				template: () => BUI.html `<div></div>`,
+				initialState: {}
+			},
+			componentsGrid: {
+				template: () => BUI.html `<div></div>`,
+				initialState: {}
+			}
+		}
+		// Define the LAYOUTS of the Grid: -------------------------------------------------------------
+		grid.layouts = {
+			Main:{
+				template:`
+					"header header" auto
+					"sidebar componentsGrid" 1fr				`,
+			},
+		}
+
+		// To tell the grid which layout to use:
+		grid.layout = "Main";
+	},[])
+
 	return(
 
-		<div className="page" id="project-details" >
+		<bim-grid ref={viewerGrid} className="viewer-grid" >
 			{/* Header */}
-			<header>				
+{/* 			<header>				
 				<div>
 					<h2 data-project-info="name">{project.name}</h2>
 					<p style={{ color: "#969696" }}>{project.description}</p>
@@ -175,27 +219,30 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
 					style={{backgroundColor:"#b40000b2"}}> Delete Project
 				</button>
 				
-			</header>
+			</header> */}
 			{/* Main Content */}
+			{/*
 			<div className="main-page-content">
 				<div style={{ display: "flex", flexDirection: "column", rowGap: 30 }}>
 					<ProjectInfo project={project} onEditClick={handleOpenEditModal}/>
-					{/* To-Do Main */}
+					{/* To-Do Main 
 					<div className="dashboard-card" style={{ flexGrow: 1 }}>
 						{/* <div>
 							<SearchBox onChange={(value)=>{pruebaOnChange(value)}}/>
-						</div> */}
+						</div> 
 						<ToDoSection toDos={currentToDos} onToDosChange={handleToDosChange}/>
 					</div>
 				</div>
-				{/* Viewer Container */}
+				{/* Viewer Container 
 				<ThreeViewer/>
 
 			</div>
 
-			{/* Rendring the Modal of Edit */}
+			{/* Rendring the Modal of Edit 
 			<ProjectModal id="edit-project-modal" title="Edit Project" project={project} onSubmit={handleUpdateProject}/>
-		</div>
+
+			*/}
+		</bim-grid>
 
 	)
 
