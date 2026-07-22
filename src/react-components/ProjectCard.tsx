@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Project  } from '../classes/Project';
 import { appIcons } from '../globals';
+import * as BUI from "@thatopen/ui"
 
 
 

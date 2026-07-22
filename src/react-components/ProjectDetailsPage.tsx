@@ -19,6 +19,7 @@ import { updateDocument } from '../firebase';
 // For UI from That Open Engine
 import * as BUI from "@thatopen/ui"
 import { appIcons } from '../globals';
+import * as TEMPLATES from '../ui-templates';
 
 
 interface ProjectDetailsPageProps{
@@ -165,11 +166,11 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
 		navigateTo("/") // Navigate to Home
 	}
 
-	// VIEWER 3D _____________________________________________________________________________________
+	/* // VIEWER 3D _____________________________________________________________________________________
 	const viewerGrid = React.useRef<BUI.Grid <["Main"]>>(null); // Referencia al contenedor del visor 3D
 	React.useEffect(() => {
 		/* const grid = viewerGrid.current;
-		Esto es lo mismo que hacer: const { current: grid } = viewerGrid; */
+		Esto es lo mismo que hacer: const { current: grid } = viewerGrid; 
 		const { current: grid } = viewerGrid;
 		if (!grid) return;
 
@@ -177,7 +178,7 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
 
 			// *** NOTE** : ALL the elements MUST have 2 properties: "TEMPLATE" and "INITIAL STATE"
 /* 							Template is a function that returns the HTML of the element, 
-							and Initial State is an object with the initial state of the element */
+							and Initial State is an object with the initial state of the element 
 		grid.elements = {
 			header: {
 				template: () => BUI.html `<div></div>`,
@@ -187,23 +188,68 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
 				template: () => BUI.html `<div></div>`,
 				initialState: {}
 			},
-			componentsGrid: {
-				template: () => BUI.html `<div></div>`,
+			componentsGrid: {			
+				// template:TEMPLATES.componentsGridTemplate,
+				template: () => BUI.html`<div style="color: white;">Probando Grid</div>`,
 				initialState: {}
 			}
 		}
+		
 		// Define the LAYOUTS of the Grid: -------------------------------------------------------------
 		grid.layouts = {
 			Main:{
 				template:`
 					"header header" auto
-					"sidebar componentsGrid" 1fr				`,
+					"sidebar componentsGrid" 1fr
+					/ 350px 1fr`,
 			},
 		}
 
 		// To tell the grid which layout to use:
 		grid.layout = "Main";
-	},[])
+	},[]) */
+// VIEWER 3D _____________________________________________________________________________________
+    const viewerGrid = React.useRef<BUI.Grid<["Main"]>>(null); // Referencia al contenedor del visor 3D
+
+    React.useEffect(() => {
+        const { current: grid } = viewerGrid;
+        if (!grid) return;
+
+        // Configuración oficial sin fallas de iteración en Shadow DOM
+        grid.elements = {
+            header: {
+                template: (_:any) => BUI.html`<div></div>`,
+                initialState: {}
+            },
+            sidebar: {
+                template: (_:any) => BUI.html`<div></div>`,
+                initialState: {}
+            },
+            componentsGrid: {
+				template: TEMPLATES.componentsGridTemplate,
+                initialState: {}
+            }
+        };
+
+        grid.layouts = {
+            Main: {
+                template: `
+                    "header header" auto
+                    "sidebar componentsGrid" 1fr
+                    / 200px 1fr
+                `,
+            },
+        };
+
+        // Forzar actualización diferida en la pila de eventos de JS para dar tiempo al Shadow DOM de Lit
+		// Espera un milisegundo a que el Web Component de @thatopen/ui termine de 'despertar' antes de pedirle que aplique el layout
+        setTimeout(() => {
+            if (grid) {
+                grid.layout = "Main";
+            }
+        }, 0);
+
+    }, []);
 
 	return(
 
@@ -242,8 +288,9 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
 			<ProjectModal id="edit-project-modal" title="Edit Project" project={project} onSubmit={handleUpdateProject}/>
 
 			*/}
-		</bim-grid>
-
+ 		</bim-grid>
 	)
-
 }
+
+
+
