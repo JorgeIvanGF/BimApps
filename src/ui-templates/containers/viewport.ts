@@ -13,6 +13,7 @@ export const viewportContainerTemplate :BUI.StatefullComponent<ViewportContainer
 			<bim-label>No viewer viewport has been defined.</bim-label>
 		`,)
 	}
-	// return BUI.html `<div class="viewport-container">${content}</div>`;
-	return BUI.html `<div class="viewport-container" style="min-height: 200px; background: #222; display: flex; align-items: center; justify-content: center;">${content}</div>`;
+
+	// return BUI.html `<div class="viewport-container" style="position:relative; width:100%; height:100%; min-height:200px; background:#222;">${content}</div>`;
+	return BUI.html `<div class="viewport-container">${content}</div>`;
 }

@@ -4,7 +4,17 @@ import * as BUI from "@thatopen/ui"
 import { ComponentsGrid } from "./src";
 import { viewportContainerTemplate } from "../../containers";
 
-export const componentsGridTemplate = (_:any) => {
+
+// Create the componentGridState
+interface ComponentsGridState{
+	viewport?: BUI.Viewport;
+}
+
+export const componentsGridTemplate: BUI.StatefullComponent<ComponentsGridState> = (state) => {
+
+	// Destructure the state
+	const { viewport } = state;
+
 	// A callback FN to be executed when the grid is created. It can be used to set up event listeners, 
 	// initialize state, or perform any other setup tasks that need to happen after the grid is created.
 	const onCreated = (e?:Element) => {
@@ -15,7 +25,7 @@ export const componentsGridTemplate = (_:any) => {
 		grid.elements ={
 			viewport:{				
 				template: viewportContainerTemplate,
-				initialState:{},
+				initialState:{viewport},
 			},
 		}
 		// Define the LAYOUTS of the Grid:

@@ -20,6 +20,7 @@ import { updateDocument } from '../firebase';
 import * as BUI from "@thatopen/ui"
 import { appIcons } from '../globals';
 import * as TEMPLATES from '../ui-templates';
+import { setupComponents } from '../bim-components';
 
 
 interface ProjectDetailsPageProps{
@@ -211,9 +212,14 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
 // VIEWER 3D _____________________________________________________________________________________
     const viewerGrid = React.useRef<BUI.Grid<["Main"]>>(null); // Referencia al contenedor del visor 3D
 
-    React.useEffect(() => {
-        const { current: grid } = viewerGrid;
+	// Define the asynchronous function
+	const setupGrid = async () => {
+
+		const { current: grid } = viewerGrid;
         if (!grid) return;
+
+		// The Viewport
+		const { viewport } = await setupComponents()
 
         // Configuración oficial sin fallas de iteración en Shadow DOM
         grid.elements = {
@@ -227,7 +233,7 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
             },
             componentsGrid: {
 				template: TEMPLATES.componentsGridTemplate,
-                initialState: {}
+                initialState: {viewport}
             }
         };
 
@@ -236,18 +242,26 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
                 template: `
                     "header header" auto
                     "sidebar componentsGrid" 1fr
-                    / 200px 1fr
+                    / auto 1fr
                 `,
             },
         };
 
         // Forzar actualización diferida en la pila de eventos de JS para dar tiempo al Shadow DOM de Lit
 		// Espera un milisegundo a que el Web Component de @thatopen/ui termine de 'despertar' antes de pedirle que aplique el layout
-        setTimeout(() => {
+/*         setTimeout(() => {
             if (grid) {
                 grid.layout = "Main";
             }
-        }, 0);
+        }, 0); */
+
+		 grid.layout = "Main";
+	}
+
+    React.useEffect(() => {
+		
+		// execute the async function
+		setupGrid();
 
     }, []);
 
