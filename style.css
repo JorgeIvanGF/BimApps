@@ -17,6 +17,7 @@
   --font-2xl: 20px;
   --font-3xl: 22px;
 
+   /* For Colors in UI TOE */
 	--bim-ui_main-base: var(--primary); /* // MAIN COLOR */
 	--bim-ui_accent-base: var(--primary-400); /* // ACCENT COLOR when hover*/
 

@@ -12,10 +12,11 @@ import { ProjectsManager } from './classes/ProjectsManager';
 import * as BUI from "@thatopen/ui"
 
 
-// Initialize the UI
+// Initialize the UI web-components
 BUI.Manager.init();
 
-// To inform TypeScript whta is a Bim-Label
+// To inform TypeScript what is a Bim-Label
+// and the rest of CUSTOM web-components made by TOE
 declare global {
 	namespace JSX{
 		interface IntrinsicElements{

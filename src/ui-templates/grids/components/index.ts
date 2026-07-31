@@ -17,9 +17,9 @@ export const componentsGridTemplate: BUI.StatefullComponent<ComponentsGridState>
 
 	// A callback FN to be executed when the grid is created. It can be used to set up event listeners, 
 	// initialize state, or perform any other setup tasks that need to happen after the grid is created.
-	const onCreated = (e?:Element) => {
-		if (!e) return;
-		const grid = e as ComponentsGrid;
+	const onCreated = (el?:Element) => {
+		if (!el) return;
+		const grid = el as ComponentsGrid;
 
 		//Define grid elements:
 		grid.elements ={
