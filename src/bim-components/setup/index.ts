@@ -1,6 +1,6 @@
 
 import * as OBC from '@thatopen/components';
-import { createWorld, setupFragmentsManager, setupIfcLoader } from './src';
+import { createWorld, setupFragmentsManager, setupHighlighter, setupIfcLoader } from './src';
 import * as BUI from "@thatopen/ui";
 import { loadModelBtnTemplate } from '../../ui-templates';
 
@@ -20,6 +20,11 @@ export const setupComponents = async () => {
 	// Setup Fragments Manager (for Multithreading)
 	setupFragmentsManager(components,world);
 
+	// Setup the Highlighter(to select elements in the model)
+	setupHighlighter(components, world);
+
+	/*********************************************************************
+	// CREATE a BUTTON:
 	// Every time you create an Element with a Statefull Template, you get a TUPLE which the first entry is the HTML Element
 	// and the 2nd entry is a Function to Update the State of the elemente
 	const [loadModelsBtn] = BUI.Component.create(loadModelBtnTemplate, {components})
@@ -28,7 +33,8 @@ export const setupComponents = async () => {
 	loadModelsBtn.style.top = "1rem";
 	loadModelsBtn.style.left = "1rem";
 	// Append the btn to the Viewport
-	viewport.append(loadModelsBtn)
+	viewport.append(loadModelsBtn) 
+	****************************************************************************/
 
 	// Initialize the components as the world is already created
 	components.init()

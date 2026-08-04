@@ -219,7 +219,7 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
         if (!grid) return;
 
 		// The Viewport
-		const { viewport } = await setupComponents()
+		const { components, viewport } = await setupComponents()
 
         // Configuración oficial sin fallas de iteración en Shadow DOM
         grid.elements = {
@@ -233,7 +233,7 @@ export function ProjectDetailsPage(props:ProjectDetailsPageProps){
             },
             componentsGrid: {
 				template: TEMPLATES.componentsGridTemplate,
-                initialState: {viewport}
+                initialState: {components, viewport}
             }
         };
 

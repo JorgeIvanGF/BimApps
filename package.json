@@ -20,8 +20,10 @@
   },
   "dependencies": {
     "@thatopen/components": "~3.1.0",
+    "@thatopen/components-front": "~3.1.0",
     "@thatopen/fragments": "~3.1.0",
     "@thatopen/ui": "~3.1.0",
+    "@thatopen/ui-obc": "~3.1.0",
     "firebase": "^12.15.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
