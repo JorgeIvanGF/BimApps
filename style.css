@@ -486,7 +486,8 @@ bim-context-menu {
 }
 
 bim-grid[floating] > bim-toolbar {
-  border: none;
-  justify-self: center;
+  border:none;
+  justify-self:center;
   outline: 1px solid var(--bim-ui_bg-contrast-40);
+  color:#30e7a1;
 }

@@ -13,6 +13,13 @@ export const appIcons = {
 	UPLOAD: "ic:round-upload",
 	DOWNLOAD:"ic:round-download",
 	APARTMENT: "material-symbols:apartment",
-	PEOPLE: "ion:people"
-
+	PEOPLE: "ion:people",
+	SEARCH: "mdi:magnify",
+	SELECT: "ix:select-alt-filled",
+	COLORIZE: "oui:color",
+	APPLY:"jam:magic",
+	CLEAR: "mdi:broom",
+	HIDE:"clarity:eye-hide-line",
+	ISOLATE:"iconoir:bright-star",
+	SHOW:"bx:show",
 }

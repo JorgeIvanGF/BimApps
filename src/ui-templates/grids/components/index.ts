@@ -44,7 +44,7 @@ export const componentsGridTemplate: BUI.StatefullComponent<ComponentsGridState>
 			Models:{
 				template:`
 					"models viewport itemsData" 1fr
-					/ 16rem 1fr 22rem
+					/ 15rem 1fr 19rem
 				`,
 			},
 		}

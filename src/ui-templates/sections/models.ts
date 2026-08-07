@@ -25,13 +25,14 @@ export const modelsPanelTemplate: BUI.StatefullComponent<ModelsPanelState> = (st
 		modelsList.queryString = input.value;
 	}
 	
-
-	return BUI.html`<bim-panel-section class="models-header" fixed icon=${appIcons.PROJECT} 
+	return BUI.html`
+	<bim-panel-section class="models-header" fixed icon=${appIcons.PROJECT} 
 		label="Models" >
 		<div style="display:flex; gap:0.5rem;">
 			<bim-text-input @input=${onSearch} placeholder="Search models..." debounce="200"></bim-text-input>
 			${loadModelsBtn}
 		</div>
 		${modelsList}
-	</bim-panel-section>`
+	</bim-panel-section>
+	`
 }

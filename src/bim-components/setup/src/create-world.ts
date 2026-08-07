@@ -1,6 +1,7 @@
 
 import * as OBC from '@thatopen/components';
 import * as BUI from '@thatopen/ui';
+import * as TEMPLATES from '../../../ui-templates';
 
 export const createWorld = (components: OBC.Components) => {
 
@@ -24,7 +25,9 @@ export const createWorld = (components: OBC.Components) => {
 	// 4. Create a Viewport on the fly using TOE system
 	const viewport = BUI.Component.create<BUI.Viewport>(
 		() => {
-			return BUI.html`<bim-viewport></bim-viewport>`;
+			const [viewportGrid] = BUI.Component.create(TEMPLATES.viewportGridTemplate,
+				 {components});
+			return BUI.html`<bim-viewport> ${viewportGrid} </bim-viewport>`;
 		},
 	);
 
